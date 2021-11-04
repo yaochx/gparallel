@@ -38,13 +38,13 @@ std::optional<dag_schema<meta_storage_t>> topological_sort(const dag_schema<meta
             return node->mutable_input_nodes().size() == 0;
         });
         if (res != dag.end()) {
-            TRACE("Found 0-input node[%s]", (*res)->name().c_str());
+            DEBUG("Found 0-input node[%s]", (*res)->name().c_str());
             result.push_back(*res);
             auto del = *res;
             dag.erase(res);
             std::for_each(dag.begin(), dag.end(), [del](auto node){
                 auto res = node->delete_input_nodes(del);
-                TRACE("Delete input [%s] for [%s] : [%s]", 
+                DEBUG("Delete input [%s] for [%s] : [%s]", 
                     del->name().c_str(), node->name().c_str(),
                     res ? "true" : "false");
             });
@@ -142,7 +142,7 @@ bool setup_dag_schema(dag_schema<meta_storage_t> & _nodes) {
         }
         return item_meta_cnt > 0 && query_meta_cnt > 0;
     }); pos != _nodes.end()) {
-        FATAL("can not process both query and item:%s", (*pos)->name().c_str());
+        ERROR("can not process both query and item:%s", (*pos)->name().c_str());
         return false;
     }
     meta_to_node_t<meta_storage_t> output2node;
@@ -152,7 +152,7 @@ bool setup_dag_schema(dag_schema<meta_storage_t> & _nodes) {
             switch (meta.type) {
             case parameter_type::OUTPUT:
                 if (output2node.count(meta.id) != 0) {
-                    FATAL("%s output fail: node[%s] already output meta[%s]",
+                    ERROR("%s output fail: node[%s] already output meta[%s]",
                         node->name().c_str(), output2node[meta.id]->name().c_str(), 
                         typeid_manager<none_type>::instance().name(meta.id).c_str());
                     return false;
@@ -162,7 +162,7 @@ bool setup_dag_schema(dag_schema<meta_storage_t> & _nodes) {
             case parameter_type::INPUT:
             case parameter_type::NONE:
             default:
-                FATAL("should not be here", "");
+                ERROR("should not be here");
                 break;
             }
         }
@@ -173,7 +173,7 @@ bool setup_dag_schema(dag_schema<meta_storage_t> & _nodes) {
         if (transitive_closure(meta_transitive_closure)) {
             show_meta_depends_graphviz(meta_transitive_closure, "meta_transitive_closure");
         } else {
-            FATAL("transitive_closure(meta_transitive_closure) fail", "");
+            ERROR("transitive_closure(meta_transitive_closure) fail");
             return false;
         } 
     }
@@ -218,7 +218,7 @@ bool setup_dag_schema(dag_schema<meta_storage_t> & _nodes) {
     topology_t node_implies;
     build_node_topology(_nodes, node_implies);
     if (!transitive_closure(node_implies)) {
-        FATAL("node: transitive_closure fail.", "");
+        ERROR("node: transitive_closure fail.");
         return false;
     }
     for (auto node : _nodes) {

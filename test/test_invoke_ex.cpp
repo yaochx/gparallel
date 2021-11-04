@@ -15,16 +15,16 @@ int fn(A a, B b, C c, D d)
 }
 
 TEST(Test, invoke_ex) {
-    //using namespace galois::gparallel;
-    //A a;
-    //B b;
-    //C c;
-    //D d;
-    //// any order of a,b,c,d is ok
-    //ASSERT_EQ(invoke_ex(fn, a, b, c, d), 1);
-    //ASSERT_EQ(invoke_ex(fn, d, b, c, a), 1);
-    //ASSERT_EQ(invoke_ex(fn, d, c, b, a), 1);
-    //ASSERT_EQ(invoke_ex(fn, d, c, b, a), 1);
+    using namespace galois::gparallel;
+    A a;
+    B b;
+    C c;
+    D d;
+    // any order of a,b,c,d is ok
+    ASSERT_EQ(invoke_ex(fn, a, b, c, d), 1);
+    ASSERT_EQ(invoke_ex(fn, d, b, c, a), 1);
+    ASSERT_EQ(invoke_ex(fn, d, c, b, a), 1);
+    ASSERT_EQ(invoke_ex(fn, d, c, b, a), 1);
 }
 
 struct AA {

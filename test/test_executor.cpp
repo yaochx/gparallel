@@ -18,7 +18,7 @@ DECL_META(C, base) {
 struct Process
 {
     static void process(input<A> a, input<B> b, output<C> c) {
-        TRACE("[gparallel] process succeed", "");
+        DEBUG("[gparallel] process succeed", "");
     };
 };
 

@@ -28,14 +28,8 @@ IF (NOT TARGET gtest)
         ${gtest_SOURCE_DIR}/include)
 ENDIF()
 
-# common
-IF (NOT TARGET common)
-    ADD_SUBDIRECTORY(common)
-ENDIF()
-
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/common/util/include")
 
 # libgparallel.a
 file(GLOB gparallel_srcs "${PROJECT_SOURCE_DIR}/src/*.cpp")
@@ -44,9 +38,9 @@ ADD_LIBRARY(gparallel STATIC ${gparallel_srcs})
 # gparallel_test
 file(GLOB test_srcs "${PROJECT_SOURCE_DIR}/test/*.cpp")
 ADD_EXECUTABLE(test ${test_srcs})
-TARGET_LINK_LIBRARIES(test gtest common gparallel)
+TARGET_LINK_LIBRARIES(test gtest gparallel)
 
 # demo
 file(GLOB demo_srcs "${PROJECT_SOURCE_DIR}/demo/*.cpp")
 ADD_EXECUTABLE(demo ${demo_srcs})
-TARGET_LINK_LIBRARIES(demo gtest common gparallel)
+TARGET_LINK_LIBRARIES(demo gtest gparallel)

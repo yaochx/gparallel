@@ -10,4 +10,3 @@
 #include "type_id.h"
 #include "util.h"
 #include "gparallel.h"
-#include "log.h"

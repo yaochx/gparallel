@@ -60,9 +60,9 @@ DECL_META(cpm_ordered_advlist, thread_data) {
 
 struct get_ctr_node {
     static void process(input<original> ori, output<ctr> ctr) {
-        INFO("[gparallel] get_ctr_node", "");
+        INFO("[gparallel] get_ctr_node");
         ctr->mutable_ctr_data().resize(ori->mutable_advs_original().size());
-        for (int pos = 0; pos < ori->mutable_advs_original().size(); pos++) {
+        for (size_t pos = 0; pos < ori->mutable_advs_original().size(); pos++) {
             auto & adv = ori->mutable_advs_original()[pos];
             ctr->mutable_ctr_data()[pos] = 0.1 * static_cast<double>(adv.id);
         }
@@ -71,9 +71,9 @@ struct get_ctr_node {
 
 struct get_cpm_node {
     static void process(input<original> ori, output<cpm> cpm) {
-        INFO("[gparallel] get_cpm_node", "");
+        INFO("[gparallel] get_cpm_node");
         cpm->mutable_cpm_data().resize(ori->mutable_advs_original().size());
-        for (int pos = 0; pos < ori->mutable_advs_original().size(); pos++) {
+        for (size_t pos = 0; pos < ori->mutable_advs_original().size(); pos++) {
             auto & adv = ori->mutable_advs_original()[pos];
             cpm->mutable_cpm_data()[pos] = 100.2 * static_cast<double>(adv.id);
         }
@@ -84,12 +84,12 @@ struct get_cpm_node {
 struct fill_node {
     static void process(input<ctr> ctr, input<cpm> cpm, input<original> ori, 
         output<original_with_ctr_cpm> ori_ctr_cpm) {
-        INFO("[gparallel] fill_node", "");
-        for (int pos = 0; pos < ori->mutable_advs_original().size(); pos++) {
+        INFO("[gparallel] fill_node");
+        for (size_t pos = 0; pos < ori->mutable_advs_original().size(); pos++) {
             auto & adv = ori_ctr_cpm->mutable_advs_original()[pos];
             adv.ctr = ctr->mutable_ctr_data()[pos];
             adv.cpm = cpm->mutable_cpm_data()[pos];
-            INFO("[gparallel] ori_ctr_cpm adv:[%d] ctr:[%lf] cpm:[%lf]", adv.id, adv.ctr, adv.cpm);
+            INFO("[gparallel] ori_ctr_cpm adv:[%ld] ctr:[%lf] cpm:[%lf]", adv.id, adv.ctr, adv.cpm);
         }
     }
 };
@@ -97,7 +97,7 @@ struct fill_node {
 struct gen_ctr_node {
     static void process(input<original_with_ctr_cpm> ori_ctr_cpm, 
         output<ctr_ordered_advlist> ctr_ordered) {
-        INFO("[gparallel] gen_ctr_node", "");
+        INFO("[gparallel] gen_ctr_node");
         ctr_ordered->mutable_advs_ctr_ordered() = ori_ctr_cpm->mutable_advs_original();
         std::sort(ctr_ordered->mutable_advs_ctr_ordered().begin(),
             ctr_ordered->mutable_advs_ctr_ordered().end(), 
@@ -109,7 +109,7 @@ struct gen_ctr_node {
 struct gen_cpm_node {
     static void process(input<original_with_ctr_cpm> ori_ctr_cpm, 
         output<cpm_ordered_advlist> cpm_ordered) {
-        INFO("[gparallel] gen_cpm_node", "");
+        INFO("[gparallel] gen_cpm_node");
         cpm_ordered->mutable_advs_cpm_ordered() = ori_ctr_cpm->mutable_advs_original();
         std::sort(cpm_ordered->mutable_advs_cpm_ordered().begin(),
             cpm_ordered->mutable_advs_cpm_ordered().end(),
@@ -119,12 +119,12 @@ struct gen_cpm_node {
 
 struct end_node {
     static void process(input<ctr_ordered_advlist> ctr, input<cpm_ordered_advlist> cpm) {
-        INFO("[gparallel] end_node", "");
+        INFO("[gparallel] end_node");
         for (auto& adv : cpm->mutable_advs_cpm_ordered()) {
-            INFO("CPM ordered:[%d]", adv.id);
+            INFO("CPM ordered:[%ld]", adv.id);
         }
         for (auto& adv : ctr->mutable_advs_ctr_ordered()) {
-            INFO("CTR ordered:[%d]", adv.id);
+            INFO("CTR ordered:[%ld]", adv.id);
         }
     }
 };
