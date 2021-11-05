@@ -101,7 +101,7 @@ struct gen_ctr_node {
         ctr_ordered->mutable_advs_ctr_ordered() = ori_ctr_cpm->mutable_advs_original();
         std::sort(ctr_ordered->mutable_advs_ctr_ordered().begin(),
             ctr_ordered->mutable_advs_ctr_ordered().end(), 
-            [](const auto& a, const auto& b)->bool{return a.ctr > b.ctr;});
+            [](const advertisement& a, const advertisement& b)->bool{return a.ctr > b.ctr;});
 
     }
 };
@@ -113,7 +113,7 @@ struct gen_cpm_node {
         cpm_ordered->mutable_advs_cpm_ordered() = ori_ctr_cpm->mutable_advs_original();
         std::sort(cpm_ordered->mutable_advs_cpm_ordered().begin(),
             cpm_ordered->mutable_advs_cpm_ordered().end(),
-            [](const auto& a, const auto& b)->bool{return a.cpm > b.cpm;});
+            [](const advertisement& a, const advertisement& b)->bool{return a.cpm > b.cpm;});
     }
 };
 
@@ -136,8 +136,8 @@ int main() {
     register_node<thread_data, fill_node>::reg(nodes);
     register_node<thread_data, gen_ctr_node, gen_cpm_node, end_node>::reg(nodes);
     setup_dag_schema<thread_data>(nodes);
-    if (auto tasks = topological_sort<thread_data>(nodes); tasks) {
-        for (auto task : tasks.value()) {
+    if (auto tasks = topological_sort<thread_data>(nodes); tasks.size() > 0) {
+        for (auto task : tasks) {
             INFO("Execute[%s]", task->name().c_str());
             task->mutable_executor()(&td);
         }

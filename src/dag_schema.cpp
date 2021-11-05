@@ -11,8 +11,9 @@
 namespace galois::gparallel {
 
 void operator += (id_set_t & i, const id_set_t & other) {
-    std::transform(other.cbegin(), other.cend(),std::inserter(i, i.end()), 
-        [](auto o){return o;});
+    i.insert(other.begin(), other.end());
+    // std::transform(other.cbegin(), other.cend(),std::inserter(i, i.end()), 
+    //     [](auto o){return o;});
 }
 
 bool operator -= (id_set_t & i, const id_set_t & other) {
@@ -37,9 +38,12 @@ bool operator -= (id_set_t & i, const id_set_t & other) {
 }
 
 void operator += (id_set_t & i, const node_io_vec & other) {
-
-    std::transform(other.cbegin(), other.cend(),std::inserter(i, i.end()), 
-        [](auto o){return o.id;});
+    for (auto io : other)
+    {
+        i.insert(io.id);
+    }
+    // std::transform(other.cbegin(), other.cend(),std::inserter(i, i.end()), 
+    //     [](auto o){return o.id;});
 }
 
 void operator += (node_io_vec & i, const node_io_vec & other) {

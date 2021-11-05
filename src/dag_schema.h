@@ -30,11 +30,11 @@ template<class meta_storage_t>
 using meta_to_node_t = std::map< id_t, node_schema_ptr<meta_storage_t>>;
 
 template<class meta_storage_t>
-std::optional<dag_schema<meta_storage_t>> topological_sort(const dag_schema<meta_storage_t>& const_dag) {
+dag_schema<meta_storage_t> topological_sort(const dag_schema<meta_storage_t>& const_dag) {
     auto dag = const_dag;
     dag_schema<meta_storage_t> result;
     while(!dag.empty()) {
-        auto res = std::find_if(dag.begin(), dag.end(), [](auto node)->bool{
+        auto res = std::find_if(dag.begin(), dag.end(), [](node_schema_ptr<meta_storage_t> node)->bool{
             return node->mutable_input_nodes().size() == 0;
         });
         if (res != dag.end()) {
@@ -42,14 +42,15 @@ std::optional<dag_schema<meta_storage_t>> topological_sort(const dag_schema<meta
             result.push_back(*res);
             auto del = *res;
             dag.erase(res);
-            std::for_each(dag.begin(), dag.end(), [del](auto node){
+            std::for_each(dag.begin(), dag.end(), [del](node_schema_ptr<meta_storage_t> node){
                 auto res = node->delete_input_nodes(del);
                 DEBUG("Delete input [%s] for [%s] : [%s]", 
                     del->name().c_str(), node->name().c_str(),
                     res ? "true" : "false");
             });
         } else {
-            return std::nullopt;
+            result.clear();
+            break;
         }
     }
     return result;
@@ -90,9 +91,13 @@ template<class meta_storage_t>
 bool build_meta_topology(const dag_schema<meta_storage_t> & _nodes, topology_t & me) {
     for (auto node : _nodes) {
         for (auto out : node->_output_metas) {
-            std::transform(node->_input_metas.begin(), node->_input_metas.end(),
-                std::inserter(me[out.id], me[out.id].end()),
-                [](auto & node){ return node.id; });
+            for (auto io : node->_input_metas)
+            {
+                me[out.id].insert(io.id);
+            }
+            // std::transform(node->_input_metas.begin(), node->_input_metas.end(),
+            //     std::inserter(me[out.id], me[out.id].end()),
+            //     [](auto & node){ return node.id; });
         }
     }
     return true;
@@ -130,7 +135,7 @@ void show_node_depends_graphviz(const dag_schema<meta_storage_t>& _nodes, std::s
 
 template<class meta_storage_t>
 bool setup_dag_schema(dag_schema<meta_storage_t> & _nodes) {
-    if (auto pos = std::find_if(_nodes.begin(), _nodes.end(), [](auto ptr){
+    if (auto pos = std::find_if(_nodes.begin(), _nodes.end(), [](node_schema_ptr<meta_storage_t> ptr){
         size_t query_meta_cnt = 0;
         size_t item_meta_cnt = 0;
         for (auto & output : ptr->_output_metas) {

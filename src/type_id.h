@@ -17,7 +17,7 @@ std::string demangle(const char* name);
 template <class tag>
 class typeid_manager {
 public:
-    static auto & instance() {
+    static typeid_manager<tag> & instance() {
         static typeid_manager<tag> singleton;
         return singleton;
     }
@@ -33,10 +33,10 @@ public:
         static std::string error_id("ErrorId");
         return error_id;
     }
-    auto begin() {
+    std::map<int, std::string>::iterator begin() {
         return _id2name.begin();
     }
-    auto end() {
+    std::map<int, std::string>::iterator end() {
         return _id2name.end();
     }
 private:

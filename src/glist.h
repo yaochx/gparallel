@@ -28,7 +28,7 @@ public:
     typedef typename first_column::data_type data_type;
     class _data_container {
     public:
-        auto data() {
+        data_type * data() {
             return _data;
         }
     //private:
