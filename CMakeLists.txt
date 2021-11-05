@@ -6,12 +6,6 @@ SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb -std=c++2a -fno-str
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall -std=c++2a -fno-strict-aliasing -Wno-register -Wno-pessimizing-move")
 SET(CMAKE_BUILD_TYPE "Release")
 
-# boost
-FIND_PACKAGE(Boost REQUIRED COMPONENTS log)
-IF(NOT Boost_FOUND)
-    MESSAGE("Can not find Boost")
-ENDIF()
-
 ADD_DEFINITIONS(-DBOOST_SPIRIT_THREADSAFE)
 ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
 ADD_DEFINITIONS(-D_DEBUG)
@@ -28,7 +22,6 @@ IF (NOT TARGET gtest)
         ${gtest_SOURCE_DIR}/include)
 ENDIF()
 
-INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src")
 
 # libgparallel.a
